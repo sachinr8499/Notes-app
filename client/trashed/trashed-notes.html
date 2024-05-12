@@ -227,7 +227,7 @@
         //#region fetch all the notes and render
         async function fetchTrashedNotes(token) {
             try {
-                const apiUrl = 'https://notes-app-bay-phi.vercel.app/api/note/get-all-notes';
+                const apiUrl = 'https://notes-app-delta-red.vercel.app/api/note/get-all-notes';
                 const response = await fetch(apiUrl, {
                     method: 'GET',
                     headers: {
@@ -303,7 +303,7 @@
         async function restoreNoteWithToken(noteId) {
             try {
                 console.log("main del funct called");
-                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/deletenote/${noteId}`;
+                const apiUrl = `https://notes-app-delta-red.vercel.app/api/note/deletenote/${noteId}`;
                 const token = localStorage.getItem('token');
 
                 const response = await fetch(apiUrl, {

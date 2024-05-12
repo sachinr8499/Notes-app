@@ -390,7 +390,7 @@
 
         async function addNoteWithToken(title, content, labels) {
             try {
-                const apiUrl = 'https://notes-app-bay-phi.vercel.app/api/note/addnote';
+                const apiUrl = 'https://notes-app-delta-red.vercel.app/api/note/addnote';
 
                 // Get the token from localStorage
                 const token = localStorage.getItem('token');
@@ -451,7 +451,7 @@
         //fetch all notes
         async function fetchAllNotes(token) {
             try {
-                const apiUrl = 'https://notes-app-bay-phi.vercel.app/api/note/get-all-notes';
+                const apiUrl = 'https://notes-app-delta-red.vercel.app/api/note/get-all-notes';
                 const response = await fetch(apiUrl, {
                     method: 'GET',
                     headers: {
@@ -525,7 +525,7 @@
             if (event.target.classList.contains('update-note-btn')) {
                 console.log("update called");
                 const noteId = event.target.dataset.noteId; // Get the note ID from the data attribute
-                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/get-one-note/${noteId}`;
+                const apiUrl = `https://notes-app-delta-red.vercel.app/api/note/get-one-note/${noteId}`;
                 const token = localStorage.getItem('token');
 
                 try {
@@ -604,7 +604,7 @@
         // Function to update a note
         async function updateNoteWithToken(noteId, title, content, labels) {
             try {
-                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/editnote/${noteId}`;
+                const apiUrl = `https://notes-app-delta-red.vercel.app/api/note/editnote/${noteId}`;
                 const token = localStorage.getItem('token');
 
                 const data = {
@@ -638,7 +638,7 @@
         //function to move to trash
         async function deleteNoteWithToken(noteId) {
             try {
-                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/deletenote/${noteId}`;
+                const apiUrl = `https://notes-app-delta-red.vercel.app/api/note/deletenote/${noteId}`;
                 const token = localStorage.getItem('token');
 
                 const response = await fetch(apiUrl, {
@@ -680,7 +680,7 @@
         async function archiveNoteWithToken(noteId) {
             console.log("main func called");
             try {
-                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/archivenote/${noteId}`;
+                const apiUrl = `https://notes-app-delta-red.vercel.app/api/note/archivenote/${noteId}`;
                 const token = localStorage.getItem('token');
 
                 const response = await fetch(apiUrl, {

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        /* Updated font family */
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: Arial, sans-serif;
+        /* Heading fonts */
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+    }
+
+    .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.3rem;
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .logo {
+        font-size: x-large;
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        width: 50%;
+    }
+
+    .search-box {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+    }
+
+    .search-button {
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .menu-icon {
+        display: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+    }
+
+    .note-form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+
+
+    input[type="text"],
+    textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .add-note-btn,
+    .update-note-submit-btn {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .update-note-btn,
+    .delete-note-btn,
+    .archive-note-btn {
+        border: 1px solid black;
+        background-color: grey;
+        font-size: 15px;
+        color: white;
+        border: none;
+        /* padding: 0.5rem 1rem; */
+        width: 53px;
+        height: 23px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    #posts-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        /* Change auto-fit to auto-fill */
+        grid-gap: 20px;
+        margin-top: 20px;
+        margin-bottom: 2rem;
+        padding: 1rem
+    }
+
+    .post {
+        background-color: white;
+        padding: 0.5rem 0.5rem;
+        width: 100%;
+        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        /* Ensure each post takes the full width of its grid cell */
+    }
+
+    .post p {
+        min-height: 100px;
+        overflow-y: auto;
+        margin-bottom: 5px;
+        word-wrap: break-word;
+    }
+
+    .label {
+        display: inline-block;
+        margin: 2px 1px;
+        width: fit-content;
+        background-color: gray;
+        border-radius: 5rem;
+        padding: 2px 6px;
+        color: white;
+        font-size: 13px;
+    }
+
+    .note {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .note:hover {
+        transform: translateY(-5px);
+    }
+
+    .note-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .note-content {
+        font-size: 14px;
+        margin-bottom: 10px;
+        max-height: 50px;
+        /* Limit the content height */
+        overflow: hidden;
+        /* Hide overflowing content */
+    }
+
+    .note-labels {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 5px;
+    }
+
+    .note-label {
+        background-color: #f0f0f0;
+        color: #333333;
+        padding: 3px 8px;
+        border-radius: 15px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        font-size: 12px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* Add styles for the update pencil icon */
+
+    .labels-container {
+        display: flex;
+        gap: 0.3rem;
+    }
+
+    .lbl-btn {
+        width: 33px;
+        height: 30px;
+        border-radius: 0.5rem;
+        font-size: x-large;
+        border: none;
+        background: black;
+        color: white;
+        margin-top: 0.3rem;
+    }
+
+    .remove-label-btn {
+        background: #060606;
+        border: none;
+        color: white;
+        border-radius: 73px;
+        width: 14px;
+    }
+
+    footer {
+        text-align: center;
+    }
+
+    #trash-link,
+    #archive-link,
+    #label-link {
+        color: #fff;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+    }
+
+    .action-menu img {
+        width: 100%;
+        height: 100%;
+        background-color: white;
+    }
+</style>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                Notes
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search...">
+                <button class="search-button">Search</button>
+            </div>
+
+            <div style="display: flex;">
+                <div class="label-nav-container" style="margin-top: 8px;"> <!-- New container for label dropdown -->
+                    Labels
+                    <select id="label-dropdown" style="width: 20px;"> <!-- Label dropdown -->
+                        <option value="" selected disabled></option> <!-- Default option -->
+                    </select>
+                </div>
+                <a href="/archived-notes" id="archive-link">Archive</a>
+                <a href="/trashed-notes" id="trash-link">Trash</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="note-form-container">
+            <h2 id="form-heading">Create Note</h2>
+            <form id="note-form">
+                <div class="form-group">
+                    <label for="note-title">Title:</label>
+                    <input type="text" id="note-title" name="note-title" placeholder="Enter title...">
+                </div>
+                <div class="form-group">
+                    <label for="note-content">Content:</label>
+                    <textarea id="note-content" name="note-content" placeholder="Enter content..."></textarea>
+                </div>
+                <div class="form-group label-class">
+                    <label for="note-label">Label:</label>
+                    <div class="labels-container" id="labels-container"></div>
+                    <div class="label-input">
+                        <input type="text" id="new-label" placeholder="Enter label...">
+                        <button class="lbl-btn" type="button" id="add-label-btn">+</button>
+                    </div>
+                </div>
+                <button type="submit" id="submit-btn" class="add-note-btn">Create</button>
+            </form>
+        </div>
+    </main>
+    <div id="posts-container"></div>
+    <footer>
+        <p>&copy; 2024 Your Company</p>
+    </footer>
+
+    <script>
+
+        //selected label notes
+        const labelDropdown = document.getElementById('label-dropdown');
+
+        labelDropdown.addEventListener('change', () => {
+            const selectedLabel = labelDropdown.value;
+            localStorage.setItem('selected-label', selectedLabel);
+            filterAndRenderNotes(selectedLabel);
+        });
+        async function filterAndRenderNotes(selectedLabel) {
+            const token = localStorage.getItem('token');
+            const allNotes = await fetchAllNotes(token);
+            if (selectedLabel == "") {
+                renderNotes(allNotes);
+                return;
+            }
+            const filteredNotes = allNotes.filter(note => {
+                return !note.isTrashed && !note.isArchived && note.labels.includes(selectedLabel);
+            });
+            renderNotes(filteredNotes);
+        }
+
+
+        // label js
+        document.addEventListener("DOMContentLoaded", function () {
+            const labelsContainer = document.getElementById("labels-container");
+            const newLabelInput = document.getElementById("new-label");
+            const addLabelBtn = document.getElementById("add-label-btn");
+
+            addLabelBtn.addEventListener("click", function () {
+                const labelText = newLabelInput.value.trim();
+                const currentLabels = labelsContainer.querySelectorAll(".label-text");
+                console.log(currentLabels);
+                if (labelText !== "") {
+                    const labelExists = Array.from(currentLabels).some(label => label.textContent.toLowerCase() === labelText.toLowerCase());
+                    if (labelExists) {
+                        alert("Label already exist");
+                    }
+                    else if (currentLabels.length == 9) {
+                        alert("cannot add more than 9 labels")
+                    }
+                    else if (!labelExists) {
+
+                        const label = document.createElement("div");
+                        label.classList.add("label");
+                        label.innerHTML = `
+                        <span class="label-text">${labelText}</span>
+                        <button type="button" class="remove-label-btn">x</button>
+                        `;
+                        labelsContainer.appendChild(label);
+                        newLabelInput.value = "";
+                    }
+                }
+            });
+
+            labelsContainer.addEventListener("click", function (event) {
+                if (event.target.classList.contains("remove-label-btn")) {
+                    event.target.parentElement.remove();
+                }
+            });
+
+            const noteForm = document.getElementById("note-form");
+            noteForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const title = document.getElementById("note-title").value.trim();
+                const content = document.getElementById("note-content").value.trim();
+                const labels = Array.from(labelsContainer.querySelectorAll(".label-text")).map(label => label.textContent);
+                const noteData = { title, content, labels };
+                console.log(noteData);
+                // Send the note data to your server or perform any other action here
+            });
+        });
+
+        //hangling crud
+        // 1 create
+
+        async function addNoteWithToken(title, content, labels) {
+            try {
+                const apiUrl = 'https://notes-app-bay-phi.vercel.app/api/note/addnote';
+
+                // Get the token from localStorage
+                const token = localStorage.getItem('token');
+
+                // Create a data object to send to the server
+                const data = {
+                    title: title,
+                    content: content,
+                    labels: labels
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Include the token in the Authorization header
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const responseData = await response.json();
+                alert('Note added successfully:', responseData);
+                location.reload();
+                // Add any success handling code here
+            } catch (error) {
+                console.error('There was a problem adding the note:', error);
+                console.log('There was an error adding the note. Please try again later.');
+            }
+        }
+
+        document.addEventListener('click', async function (event) {
+            if (event.target.classList.contains('add-note-btn')) {
+                console.log("add called");
+                event.preventDefault();
+                const titleInput = document.getElementById('note-title');
+                const contentInput = document.getElementById('note-content');
+                const labelsContainer = document.querySelector('.labels-container');
+
+                const title = titleInput.value;
+                const content = contentInput.value;
+                const labels = Array.from(labelsContainer.querySelectorAll('.label-text')).map(label => label.textContent);
+
+                // Call addNoteWithToken function with form data
+                await addNoteWithToken(title, content, labels);
+
+                // Clear input fields and labels
+                titleInput.value = '';
+                contentInput.value = '';
+                labelsContainer.innerHTML = ''; // Clear labels container content
+            }
+        });
+
+
+        //fetch all notes
+        async function fetchAllNotes(token) {
+            try {
+                const apiUrl = 'https://notes-app-bay-phi.vercel.app/api/note/get-all-notes';
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                const responseData = await response.json();
+                const notes = responseData.notes.filter(note => !note.isTrashed && !note.isArchived); // Filter notes
+                var allLabels = notes.flatMap(note => note.labels);
+                allLabels.splice(0, 0, "")
+
+                const uniqueLabels = [...new Set(allLabels)];
+                const labelDropdown = document.getElementById('label-dropdown');
+                labelDropdown.innerHTML = ''; // Clear previous options
+                uniqueLabels.forEach(label => {
+                    const option = document.createElement('option');
+                    option.value = label;
+                    option.textContent = label;
+                    labelDropdown.appendChild(option);
+                });
+                return notes;
+            } catch (error) {
+                console.error('Error fetching notes:', error);
+                return []; // Return an empty array if there's an error
+            }
+        }
+        function renderNotes(posts) {
+            const labelDropdown = document.getElementById('label-dropdown');
+            labelDropdown.value = localStorage.getItem('selected-label')
+            const postsContainer = document.getElementById('posts-container');
+            postsContainer.innerHTML = ''; // Clear previous posts
+
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.classList.add('post');
+                postElement.innerHTML = `
+                <div class="action-menu">
+                    <button type="button" class="update-note-btn" data-note-id="${post._id}">
+                        edit
+                    </button>
+                    <button type="button" class="delete-note-btn" data-note-id="${post._id}">
+                        update
+                    </button>
+                    </button>
+                    <button type="button" class="archive-note-btn" data-note-id="${post._id}">
+                        delete
+                    </button>
+                </div>
+            <div class="post-title-container">
+                <h3>${post.title}</h3>
+            </div>
+            <p>${post.content}</p>
+            <div class="labels">
+                ${post.labels.map(label => `<span class="label">${label}</span>`).join('')}
+            </div>
+        `;
+                postsContainer.appendChild(postElement);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            const allNotes = await fetchAllNotes(token);
+            renderNotes(allNotes);
+        });
+
+        document.addEventListener('click', async function (event) {
+            if (event.target.classList.contains('update-note-btn')) {
+                console.log("update called");
+                const noteId = event.target.dataset.noteId; // Get the note ID from the data attribute
+                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/get-one-note/${noteId}`;
+                const token = localStorage.getItem('token');
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error fetching note data');
+                    }
+
+                    const responseData = await response.json();
+                    const { title, content, labels } = responseData.note;
+
+                    // Fill the form fields with the fetched note data
+                    document.getElementById('note-title').value = title;
+                    document.getElementById('note-content').value = content;
+
+                    // Clear existing labels before adding fetched labels
+                    const labelsContainer = document.getElementById('labels-container');
+                    labelsContainer.innerHTML = '';
+
+                    labels.forEach(label => {
+                        const labelElement = document.createElement('div');
+                        labelElement.classList.add('label');
+                        labelElement.innerHTML = `
+                        <span class="label-text">${label}</span>
+                        <button type="button" class="remove-label-btn">x</button>
+                    `;
+                        labelsContainer.appendChild(labelElement);
+                    });
+
+                    // Change the form submit button to an update button
+                    const submitBtn = document.querySelector('.add-note-btn');
+                    submitBtn.textContent = 'Update';
+                    submitBtn.classList.remove('add-note-btn');
+                    submitBtn.classList.add('update-note-submit-btn');
+                    submitBtn.dataset.noteId = noteId; // Add note ID to the update button data attribute
+                } catch (error) {
+                    console.error('Error updating note:', error);
+                }
+            }
+        });
+
+        // Event listener for submitting an updated note
+        document.addEventListener('click', async function (event) {
+            if (event.target.classList.contains('update-note-submit-btn')) {
+                console.log("update main");
+                event.preventDefault();
+                const noteId = event.target.dataset.noteId;
+                const title = document.getElementById('note-title').value.trim();
+                const content = document.getElementById('note-content').value.trim();
+                const labels = Array.from(document.querySelectorAll('.label-text')).map(label => label.textContent);
+
+                // Call the updateNoteWithToken function
+                await updateNoteWithToken(noteId, title, content, labels);
+
+                // Clear form fields and labels
+                document.getElementById('note-title').value = '';
+                document.getElementById('note-content').value = '';
+                document.getElementById('labels-container').innerHTML = '';
+
+                // Change the submit button back to its original state
+                const submitBtn = document.querySelector('.update-note-submit-btn');
+                submitBtn.textContent = 'Create';
+
+                submitBtn.classList.remove('update-note-submit-btn');
+                submitBtn.classList.add('add-note-btn');
+                submitBtn.removeAttribute('data-note-id');
+            }
+        });
+
+        // Function to update a note
+        async function updateNoteWithToken(noteId, title, content, labels) {
+            try {
+                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/editnote/${noteId}`;
+                const token = localStorage.getItem('token');
+
+                const data = {
+                    title: title,
+                    content: content,
+                    labels: labels
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error updating note');
+                }
+
+                const responseData = await response.json();
+                alert('Note updated successfully:', responseData);
+                location.reload();
+                // You can add any success handling code here
+            } catch (error) {
+                console.error('Error updating note:', error);
+            }
+        }
+
+        //function to move to trash
+        async function deleteNoteWithToken(noteId) {
+            try {
+                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/deletenote/${noteId}`;
+                const token = localStorage.getItem('token');
+
+                const response = await fetch(apiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error updating note');
+                }
+
+                const responseData = await response.json();
+                alert('Note deleted successfully:', responseData);
+                location.reload();
+                // You can add any success handling code here
+            } catch (error) {
+                console.error('Error updating note:', error);
+            }
+        }
+
+        document.addEventListener('click', async function (event) {
+            if (event.target.classList.contains('delete-note-btn')) {
+                event.preventDefault();
+                const noteId = event.target.dataset.noteId;
+
+                // Call the deleteNoteWithToken function
+                await deleteNoteWithToken(noteId);
+
+                // Change the submit button back to its original state
+                submitBtn.classList.remove('udelete-note-btn');
+                submitBtn.removeAttribute('data-note-id');
+            }
+        });
+
+        //archive note
+        async function archiveNoteWithToken(noteId) {
+            console.log("main func called");
+            try {
+                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/archivenote/${noteId}`;
+                const token = localStorage.getItem('token');
+
+                const response = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log("req send");
+
+                if (!response.ok) {
+                    throw new Error('Error archiving note');
+                }
+
+                console.log("response got");
+                const responseData = await response.json();
+                alert('Note archive successfully:', responseData);
+                location.reload();
+                // You can add any success handling code here
+            } catch (error) {
+                console.error('Error archive note:', error);
+            }
+        }
+
+        document.addEventListener('click', async function (event) {
+            if (event.target.classList.contains('archive-note-btn')) {
+                event.preventDefault();
+                const noteId = event.target.dataset.noteId;
+                // Call the archiveNoteWithToken function
+                await archiveNoteWithToken(noteId);
+
+                // Change the submit button back to its original state
+            }
+        });
+
+
+        //search btn
+        document.querySelector('.search-button').addEventListener('click', async () => {
+            console.log("clicked");
+            const searchInput = document.querySelector('.search-box').value.trim().toLowerCase();
+            const token = localStorage.getItem('token');
+            const notes = await fetchAllNotes(token);
+            if (searchInput == "") {
+                renderNotes(notes)
+                return;
+            }
+
+            const filteredNotes = notes.filter(note =>
+                note.title.toLowerCase().includes(searchInput) ||
+                note.content.toLowerCase().includes(searchInput) ||
+                note.labels.some(label => label.toLowerCase().includes(searchInput))
+            );
+
+            renderNotes(filteredNotes);
+        });
+
+    </script>
+</body>
+
+</html>

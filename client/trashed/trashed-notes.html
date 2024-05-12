@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trashed Notes</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.3rem;
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .logo {
+            font-size: x-large;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 50%;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .search-button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #posts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 20px;
+            margin-top: 20px;
+            padding: 1rem;
+        }
+
+        .post {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .post-title-container {
+            margin-bottom: 10px;
+        }
+
+        .labels {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 5px;
+        }
+
+        .label {
+            background-color: #f0f0f0;
+            color: #333333;
+            padding: 3px 8px;
+            border-radius: 15px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .delete-note-btn {
+            background-color: grey;
+            font-size: 15px;
+            color: white;
+            border: none;
+            /* padding: 0.5rem 1rem; */
+            width: 53px;
+            height: 23px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: #666;
+        }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .logo:hover {
+            cursor: pointer;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        #trash-link,
+        #archive-link,
+        #label-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+        }
+
+        .action-menu img {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+        }
+
+        .action-menu img:hover {
+            background-color: gray;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                Notes
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search...">
+                <button class="search-button">Search</button>
+            </div>
+            <div style="display: flex;">
+                <div class="label-nav-container" style="margin-top: 8px;"> <!-- New container for label dropdown -->
+                    Labels
+                    <select id="label-dropdown" style="width: 20px;"> <!-- Label dropdown -->
+                        <option value="" selected disabled></option> <!-- Default option -->
+                    </select>
+                </div>
+                <a href="/archived-notes" id="archive-link">Archive</a>
+                <a href="/trashed-notes" id="trash-link">Trash</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div id="posts-container"></div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Your Company</p>
+    </footer>
+    <script>
+
+        //#region Label nav link
+        const labelDropdown = document.getElementById('label-dropdown');
+
+        labelDropdown.addEventListener('change', () => {
+            const selectedLabel = labelDropdown.value;
+            localStorage.setItem('selected-label', selectedLabel);
+            filterAndRenderNotes(selectedLabel);
+        });
+        async function filterAndRenderNotes(selectedLabel) {
+            const token = localStorage.getItem('token');
+            const allNotes = await fetchTrashedNotes(token);
+            if (selectedLabel == "") {
+                renderNotes(allNotes);
+                return;
+            }
+            const filteredNotes = allNotes.filter(note => {
+                return note.isTrashed && note.labels.includes(selectedLabel);
+            });
+            renderNotes(filteredNotes);
+        }
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            const trashedNotes = await fetchTrashedNotes(token);
+            renderNotes(trashedNotes);
+        });
+
+        //#endregion
+
+        //#region fetch all the notes and render
+        async function fetchTrashedNotes(token) {
+            try {
+                const apiUrl = 'https://notes-app-bay-phi.vercel.app/api/note/get-all-notes';
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const responseData = await response.json();
+                const notes = responseData.notes.filter(note => note.isTrashed);
+                var allLabels = notes.flatMap(note => note.labels);
+                allLabels.splice(0, 0, "")
+
+                const uniqueLabels = [...new Set(allLabels)];
+                const labelDropdown = document.getElementById('label-dropdown');
+                labelDropdown.innerHTML = ''; // Clear previous options
+                uniqueLabels.forEach(label => {
+                    const option = document.createElement('option');
+                    option.value = label;
+                    option.textContent = label;
+                    labelDropdown.appendChild(option);
+                });
+                return notes;
+            } catch (error) {
+                console.error('Error fetching trashed notes:', error);
+                return []; // Return an empty array if there's an error
+            }
+        }
+
+        //render all the notes
+        function renderNotes(posts) {
+            const postsContainer = document.getElementById('posts-container');
+            labelDropdown.value = localStorage.getItem('selected-label')
+            postsContainer.innerHTML = ''; // Clear previous posts
+
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.classList.add('post');
+                postElement.innerHTML = `
+                    <div class="action-menu">
+                        <button type="button" class="delete-note-btn" data-note-id="${post._id}">
+                            delete
+                        </button>
+                    </div>
+                    <div class="post-title-container">
+                        <h3>${post.title}</h3>
+                    </div>
+                    <p>${post.content}</p>
+                    <div class="labels">
+                        ${post.labels.map(label => `<span class="label">${label}</span>`).join('')}
+                    </div>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        }
+        //#endregion
+
+        //#region restore notes
+        document.addEventListener('click', async function (event) {
+            if (event.target.classList.contains('delete-note-btn')) {
+                console.log("event called");
+                event.preventDefault();
+                const noteId = event.target.dataset.noteId;
+                await restoreNoteWithToken(noteId);
+            } else if (event.target.classList.contains('logo')) {
+                window.location.href = '/notes'; // Redirect to home page
+            }
+        });
+
+        async function restoreNoteWithToken(noteId) {
+            try {
+                console.log("main del funct called");
+                const apiUrl = `https://notes-app-bay-phi.vercel.app/api/note/deletenote/${noteId}`;
+                const token = localStorage.getItem('token');
+
+                const response = await fetch(apiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    } // Update isTrashed property to false
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error restoring note');
+                }
+
+                const responseData = await response.json();
+                alert('Note restored:', responseData);
+                location.reload(); // Refresh the page to reflect changes
+            } catch (error) {
+                console.error('Error restoring note:', error);
+            }
+        }
+        //#endregion
+
+        //#region search functionality
+        document.querySelector('.search-button').addEventListener('click', async () => {
+            console.log("clicked");
+            const searchInput = document.querySelector('.search-box').value.trim().toLowerCase();
+            const token = localStorage.getItem('token');
+            const notes = await fetchTrashedNotes(token);
+            if (searchInput == "") {
+                renderNotes(notes)
+                return;
+            }
+
+            const filteredNotes = notes.filter(note =>
+                note.title.toLowerCase().includes(searchInput) ||
+                note.content.toLowerCase().includes(searchInput) ||
+                note.labels.some(label => label.toLowerCase().includes(searchInput))
+            );
+
+            renderNotes(filteredNotes);
+        });
+        //#endregion
+    </script>
+</body>
+
+</html>

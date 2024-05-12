@@ -151,12 +151,18 @@
             padding: 0.5rem 1rem;
         }
 
-        .action-menu span {
-            width: 100%;
-            height: 100%;
+        .action-menu img {
+            width: 20px;
+            height: 20px;
+            background-color: white;
         }
 
-        .action-menu span:hover {
+        .action-menu img:hover {
+            background-color: gray;
+            cursor: pointer;
+        }
+
+        .action-menu button:hover {
             cursor: pointer;
         }
     </style>
@@ -270,7 +276,7 @@
                 postElement.innerHTML = `
                     <div class="action-menu">
                         <button type="button" class="delete-note-btn" data-note-id="${post._id}">
-                            <span>delete</span>
+                            delete
                         </button>
                     </div>
                     <div class="post-title-container">
